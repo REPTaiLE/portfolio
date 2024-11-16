@@ -9,7 +9,52 @@ import dynamic from 'next/dynamic'
 import { useInView as useInViewIntersectionObserver } from 'react-intersection-observer';
 import Profile from './profile.png';
 
-const translations = {
+interface Translations {
+    home: string;
+    skills: string;
+    projects: string;
+    contact: string;
+    viewProjects: string;
+    contactMe: string;
+    skillsTitle: string;
+    projectsTitle: string;
+    contactTitle: string;
+    openToOpportunities: string;
+    reachOut: string;
+    allRightsReserved: string;
+    resume: string;
+    switchtoSpanish: string;
+    cambiarAIngles: string;
+    about: string;
+    aboutTitle: string;
+    aboutText1: string;
+    aboutText2: string;
+    skillsDescription: string;
+    backendDevelopment: string;
+    automationWorkflows: string;
+    databaseManagement: string;
+    apiDevelopment: string;
+    viewProject: string;
+    projectAutomatedWorkflow: {
+      name: string;
+      description: string;
+    },
+    projectDataProcessing: {
+      name: string;
+      description: string;
+    },
+    projectRestfulAPI: {
+      name: string;
+      description: string;
+    }
+}
+
+interface TranslationsByLanguage {
+  en: Translations;
+  es: Translations;
+}
+
+const translations: TranslationsByLanguage = {
   en: {
     home: "Home",
     skills: "Skills",
@@ -134,32 +179,6 @@ const projects = [
   },
 ]
 
-// const Section = ({ children, id }) => {
-//   const { ref, inView } = useInViewIntersectionObserver({
-//     triggerOnce: true,
-//     threshold: 0.1,
-//   })
-
-//   return (
-//     <section id={id} className="min-h-screen flex items-center justify-center py-20 relative" ref={ref}>
-//       <AnimatePresence>
-//         {inView && (
-//           <motion.div
-//             initial={{ opacity: 0, y: 50 }}
-//             animate={{ opacity: 1, y: 0 }}
-//             exit={{ opacity: 0, y: -50 }}
-//             transition={{ duration: 0.8, ease: "easeOut" }}
-//             className="w-full max-w-6xl px-4 sm:px-6 lg:px-8"
-//           >
-//             {children}
-//           </motion.div>
-//         )}
-//       </AnimatePresence>
-//     </section>
-//   )
-// }
-
-
 type SectionProps = {
   children: ReactNode;
   id: string;
@@ -197,35 +216,6 @@ const Section: React.FC<SectionProps> = ({ children, id }) => {
 type Particle = {
   index: number;
 };
-
-// const Particle = ({ index }) => {
-//   const randomX = Math.random() * 100
-//   const randomY = Math.random() * 100
-//   const size = Math.random() * 3 + 1
-
-//   return (
-//     <motion.div
-//       className="absolute bg-orange-500 rounded-full"
-//       style={{
-//         width: size,
-//         height: size,
-//         left: `${randomX}%`,
-//         top: `${randomY}%`,
-//       }}
-//       animate={{
-//         x: [0, Math.random() * 100 - 50],
-//         y: [0, Math.random() * 100 - 50],
-//         opacity: [0, 1, 0],
-//       }}
-//       transition={{
-//         duration: Math.random() * 5 + 5,
-//         repeat: Infinity,
-//         repeatType: "reverse",
-//       }}
-//     />
-//   )
-// }
-
 
 type ParticleProps = {
   index: number;
@@ -311,8 +301,12 @@ const PointerIllumination = () => {
   );
 };
 
-const Footer = ({ language }) => {
-  const [year, setYear] = useState('');
+type FooterProps = {
+  language: "en" | "es"; // Ajusta según los idiomas soportados
+};
+
+const Footer: React.FC<FooterProps> = ({ language }) => {
+  const [year, setYear] = useState("");
 
   useEffect(() => {
     setYear(new Date().getFullYear().toString());
@@ -320,17 +314,124 @@ const Footer = ({ language }) => {
 
   return (
     <footer className="bg-slate-900 text-center py-6 mt-20 flex flex-col items-center justify-center relative z-10">
-      <p className="text-slate-400">&copy; {year} Francisco González. {translations[language].allRightsReserved}</p>
-      <p className="text-slate-400 mt-2">Powered by <a href="https://v0.dev" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-400">v0.dev</a></p>
+      <p className="text-slate-400">
+        &copy; {year} Francisco González. {translations[language].allRightsReserved}
+      </p>
+      <p className="text-slate-400 mt-2">
+        Powered by{" "}
+        <a
+          href="https://v0.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-orange-500 hover:text-orange-400"
+        >
+          v0.dev
+        </a>
+      </p>
     </footer>
   );
 };
 
-const NavMenu = ({ activeSection, scrollTo, language, setLanguage, isDesktop }) => {
+// const NavMenu = ({ activeSection, scrollTo, language, setLanguage, isDesktop }) => {
+//   const [isOpen, setIsOpen] = useState(false);
+//   const toggleMenu = () => setIsOpen(!isOpen);
+
+//   const menuItems = ['home', 'about', 'skills', 'projects', 'contact']; 
+
+//   const menuContent = (
+//     <>
+//       {menuItems.map((section) => (
+//         <li key={section}>
+//           <motion.button
+//             onClick={() => {
+//               scrollTo(section);
+//               if (!isDesktop) toggleMenu();
+//             }}
+//             className={`text-lg transition-colors duration-300 ${
+//               activeSection === section ? 'text-orange-500 border-b-2 border-orange-500' : 'text-orange-200 hover:text-orange-100'
+//             }`}
+//             whileHover={{ scale: 1.1 }}
+//             whileTap={{ scale: 0.95 }}
+//           >
+//             {translations[language][section]}
+//           </motion.button>
+//         </li>
+//       ))}
+//       <li>
+//         <motion.button
+//           onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
+//           className="text-orange-200 hover:text-orange-100"
+//           whileHover={{ scale: 1.1 }}
+//           whileTap={{ scale: 0.95 }}
+//           aria-label={language === 'en' ? translations[language].switchtoSpanish : translations[language].cambiarAIngles}
+//         >
+//           <Globe className="w-6 h-6" />
+//         </motion.button>
+//       </li>
+//       <li>
+//         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+//           <a
+//             href="/path-to-your-resume.pdf"
+//             download
+//             className="text-orange-200 hover:text-orange-100 px-3 py-2 rounded-md bg-orange-500 text-slate-900"
+//           >
+//             {translations[language].resume}
+//           </a>
+//         </motion.div>
+//       </li>
+//     </>
+//   );
+
+//   return (
+//     <nav className="relative z-50">
+//       {isDesktop ? (
+//         <ul className="flex items-center space-x-8">
+//           {menuContent}
+//         </ul>
+//       ) : (
+//         <>
+//           <button
+//             onClick={toggleMenu}
+//             className="text-orange-200 hover:text-orange-100"
+//             aria-label="Toggle menu"
+//           >
+//             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+//           </button>
+//           <AnimatePresence>
+//             {isOpen && (
+//               <motion.div
+//                 initial={{ opacity: 0, y: -20 }}
+//                 animate={{ opacity: 1, y: 0 }}
+//                 exit={{ opacity: 0, y: -20 }}
+//                 transition={{ duration: 0.2 }}
+//                 className="absolute top-full right-0 mt-2 w-48 bg-slate-800 rounded-md shadow-lg py-2"
+//               >
+//                 <ul className="flex flex-col space-y-2">
+//                   {menuContent}
+//                 </ul>
+//               </motion.div>
+//             )}
+//           </AnimatePresence>
+//         </>
+//       )}
+//     </nav>
+//   );
+// };
+
+
+interface NavMenuProps {
+  activeSection: string;
+  scrollTo: (section: string) => void;
+  language: "en" | "es";
+  setLanguage: (language: "en" | "es") => void;
+  isDesktop: boolean;
+}
+
+const NavMenu: React.FC<NavMenuProps> = ({ activeSection, scrollTo, language, setLanguage, isDesktop }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const menuItems = ['home', 'about', 'skills', 'projects', 'contact'];
+  const menuItems = ["home", "about", "skills", "projects", "contact"];
 
   const menuContent = (
     <>
@@ -342,7 +443,9 @@ const NavMenu = ({ activeSection, scrollTo, language, setLanguage, isDesktop }) 
               if (!isDesktop) toggleMenu();
             }}
             className={`text-lg transition-colors duration-300 ${
-              activeSection === section ? 'text-orange-500 border-b-2 border-orange-500' : 'text-orange-200 hover:text-orange-100'
+              activeSection === section
+                ? "text-orange-500 border-b-2 border-orange-500"
+                : "text-orange-200 hover:text-orange-100"
             }`}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
@@ -353,11 +456,15 @@ const NavMenu = ({ activeSection, scrollTo, language, setLanguage, isDesktop }) 
       ))}
       <li>
         <motion.button
-          onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
+          onClick={() => setLanguage(language === "en" ? "es" : "en")}
           className="text-orange-200 hover:text-orange-100"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          aria-label={language === 'en' ? translations[language].switchtoSpanish : translations[language].cambiarAIngles}
+          aria-label={
+            language === "en"
+              ? translations[language].switchtoSpanish
+              : translations[language].cambiarAIngles
+          }
         >
           <Globe className="w-6 h-6" />
         </motion.button>
@@ -379,9 +486,7 @@ const NavMenu = ({ activeSection, scrollTo, language, setLanguage, isDesktop }) 
   return (
     <nav className="relative z-50">
       {isDesktop ? (
-        <ul className="flex items-center space-x-8">
-          {menuContent}
-        </ul>
+        <ul className="flex items-center space-x-8">{menuContent}</ul>
       ) : (
         <>
           <button
@@ -400,9 +505,7 @@ const NavMenu = ({ activeSection, scrollTo, language, setLanguage, isDesktop }) 
                 transition={{ duration: 0.2 }}
                 className="absolute top-full right-0 mt-2 w-48 bg-slate-800 rounded-md shadow-lg py-2"
               >
-                <ul className="flex flex-col space-y-2">
-                  {menuContent}
-                </ul>
+                <ul className="flex flex-col space-y-2">{menuContent}</ul>
               </motion.div>
             )}
           </AnimatePresence>
@@ -411,6 +514,7 @@ const NavMenu = ({ activeSection, scrollTo, language, setLanguage, isDesktop }) 
     </nav>
   );
 };
+
 
 const DynamicNavMenu = dynamic(() => Promise.resolve(NavMenu), { ssr: false })
 
