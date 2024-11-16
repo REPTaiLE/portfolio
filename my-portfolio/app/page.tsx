@@ -1,8 +1,8 @@
 'use client'
-import React from 'react'
+import React, { ReactNode } from "react";
 import { useRef, useEffect, useState } from 'react'
-import { motion, useScroll, useSpring, useInView, AnimatePresence } from 'framer-motion'
-import { Github, Linkedin, Mail, Code, Server, Database, Workflow, Cpu, FileJson, ChevronDown, ExternalLink, Globe, Menu, X } from 'lucide-react'
+import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion'
+import { Github, Linkedin, Mail, Server, Database, Workflow, Cpu, FileJson, ChevronDown, ExternalLink, Globe, Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import dynamic from 'next/dynamic'
@@ -134,14 +134,49 @@ const projects = [
   },
 ]
 
-const Section = ({ children, id }) => {
+// const Section = ({ children, id }) => {
+//   const { ref, inView } = useInViewIntersectionObserver({
+//     triggerOnce: true,
+//     threshold: 0.1,
+//   })
+
+//   return (
+//     <section id={id} className="min-h-screen flex items-center justify-center py-20 relative" ref={ref}>
+//       <AnimatePresence>
+//         {inView && (
+//           <motion.div
+//             initial={{ opacity: 0, y: 50 }}
+//             animate={{ opacity: 1, y: 0 }}
+//             exit={{ opacity: 0, y: -50 }}
+//             transition={{ duration: 0.8, ease: "easeOut" }}
+//             className="w-full max-w-6xl px-4 sm:px-6 lg:px-8"
+//           >
+//             {children}
+//           </motion.div>
+//         )}
+//       </AnimatePresence>
+//     </section>
+//   )
+// }
+
+
+type SectionProps = {
+  children: ReactNode;
+  id: string;
+};
+
+const Section: React.FC<SectionProps> = ({ children, id }) => {
   const { ref, inView } = useInViewIntersectionObserver({
     triggerOnce: true,
     threshold: 0.1,
-  })
+  });
 
   return (
-    <section id={id} className="min-h-screen flex items-center justify-center py-20 relative" ref={ref}>
+    <section
+      id={id}
+      className="min-h-screen flex items-center justify-center py-20 relative"
+      ref={ref}
+    >
       <AnimatePresence>
         {inView && (
           <motion.div
@@ -156,13 +191,50 @@ const Section = ({ children, id }) => {
         )}
       </AnimatePresence>
     </section>
-  )
-}
+  );
+};
 
-const Particle = ({ index }) => {
-  const randomX = Math.random() * 100
-  const randomY = Math.random() * 100
-  const size = Math.random() * 3 + 1
+type Particle = {
+  index: number;
+};
+
+// const Particle = ({ index }) => {
+//   const randomX = Math.random() * 100
+//   const randomY = Math.random() * 100
+//   const size = Math.random() * 3 + 1
+
+//   return (
+//     <motion.div
+//       className="absolute bg-orange-500 rounded-full"
+//       style={{
+//         width: size,
+//         height: size,
+//         left: `${randomX}%`,
+//         top: `${randomY}%`,
+//       }}
+//       animate={{
+//         x: [0, Math.random() * 100 - 50],
+//         y: [0, Math.random() * 100 - 50],
+//         opacity: [0, 1, 0],
+//       }}
+//       transition={{
+//         duration: Math.random() * 5 + 5,
+//         repeat: Infinity,
+//         repeatType: "reverse",
+//       }}
+//     />
+//   )
+// }
+
+
+type ParticleProps = {
+  index: number;
+};
+
+const Particle: React.FC<ParticleProps> = ({ index }) => {
+  const randomX = Math.random() * 100 + index; // Usar `index` para variar la posición
+  const randomY = Math.random() * 100 + index;
+  const size = Math.random() * 3 + 1;
 
   return (
     <motion.div
@@ -170,8 +242,8 @@ const Particle = ({ index }) => {
       style={{
         width: size,
         height: size,
-        left: `${randomX}%`,
-        top: `${randomY}%`,
+        left: `${randomX % 100}%`, // Usar módulo para evitar valores fuera del rango
+        top: `${randomY % 100}%`,
       }}
       animate={{
         x: [0, Math.random() * 100 - 50],
@@ -179,13 +251,13 @@ const Particle = ({ index }) => {
         opacity: [0, 1, 0],
       }}
       transition={{
-        duration: Math.random() * 5 + 5,
+        duration: Math.random() * 5 + index % 5, // Usar `index` para variar la duración
         repeat: Infinity,
         repeatType: "reverse",
       }}
     />
-  )
-}
+  );
+};
 
 const AnimatedBackground = () => {
   return (
