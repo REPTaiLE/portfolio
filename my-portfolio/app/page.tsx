@@ -11,8 +11,8 @@ import Profile from './profile.png';
 
 interface Translations {
     home: string;
-    skills: string;
-    projects: string;
+    skills: { name: string };
+    projects: { name: string };
     contact: string;
     viewProjects: string;
     contactMe: string;
@@ -57,8 +57,8 @@ interface TranslationsByLanguage {
 const translations: TranslationsByLanguage = {
   en: {
     home: "Home",
-    skills: "Skills",
-    projects: "Projects",
+    skills: { name: "Skills" },
+    projects: { name: "Projects" },
     contact: "Contact",
     viewProjects: "View Projects",
     contactMe: "Contact Me",
@@ -96,8 +96,8 @@ const translations: TranslationsByLanguage = {
   },
   es: {
     home: "Inicio",
-    skills: "Habilidades",
-    projects: "Proyectos",
+    skills: { name: "Habilidades" },
+    projects: { name: "Proyectos" },
     contact: "Contacto",
     viewProjects: "Ver Proyectos",
     contactMe: "Contáctame",
@@ -134,6 +134,7 @@ const translations: TranslationsByLanguage = {
     }
   }
 };
+
 
 const skills = [
   { 
@@ -332,93 +333,7 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
   );
 };
 
-// const NavMenu = ({ activeSection, scrollTo, language, setLanguage, isDesktop }) => {
-//   const [isOpen, setIsOpen] = useState(false);
-//   const toggleMenu = () => setIsOpen(!isOpen);
-
-//   const menuItems = ['home', 'about', 'skills', 'projects', 'contact']; 
-
-//   const menuContent = (
-//     <>
-//       {menuItems.map((section) => (
-//         <li key={section}>
-//           <motion.button
-//             onClick={() => {
-//               scrollTo(section);
-//               if (!isDesktop) toggleMenu();
-//             }}
-//             className={`text-lg transition-colors duration-300 ${
-//               activeSection === section ? 'text-orange-500 border-b-2 border-orange-500' : 'text-orange-200 hover:text-orange-100'
-//             }`}
-//             whileHover={{ scale: 1.1 }}
-//             whileTap={{ scale: 0.95 }}
-//           >
-//             {translations[language][section]}
-//           </motion.button>
-//         </li>
-//       ))}
-//       <li>
-//         <motion.button
-//           onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
-//           className="text-orange-200 hover:text-orange-100"
-//           whileHover={{ scale: 1.1 }}
-//           whileTap={{ scale: 0.95 }}
-//           aria-label={language === 'en' ? translations[language].switchtoSpanish : translations[language].cambiarAIngles}
-//         >
-//           <Globe className="w-6 h-6" />
-//         </motion.button>
-//       </li>
-//       <li>
-//         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-//           <a
-//             href="/path-to-your-resume.pdf"
-//             download
-//             className="text-orange-200 hover:text-orange-100 px-3 py-2 rounded-md bg-orange-500 text-slate-900"
-//           >
-//             {translations[language].resume}
-//           </a>
-//         </motion.div>
-//       </li>
-//     </>
-//   );
-
-//   return (
-//     <nav className="relative z-50">
-//       {isDesktop ? (
-//         <ul className="flex items-center space-x-8">
-//           {menuContent}
-//         </ul>
-//       ) : (
-//         <>
-//           <button
-//             onClick={toggleMenu}
-//             className="text-orange-200 hover:text-orange-100"
-//             aria-label="Toggle menu"
-//           >
-//             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-//           </button>
-//           <AnimatePresence>
-//             {isOpen && (
-//               <motion.div
-//                 initial={{ opacity: 0, y: -20 }}
-//                 animate={{ opacity: 1, y: 0 }}
-//                 exit={{ opacity: 0, y: -20 }}
-//                 transition={{ duration: 0.2 }}
-//                 className="absolute top-full right-0 mt-2 w-48 bg-slate-800 rounded-md shadow-lg py-2"
-//               >
-//                 <ul className="flex flex-col space-y-2">
-//                   {menuContent}
-//                 </ul>
-//               </motion.div>
-//             )}
-//           </AnimatePresence>
-//         </>
-//       )}
-//     </nav>
-//   );
-// };
-
-
+// Props del componente
 interface NavMenuProps {
   activeSection: string;
   scrollTo: (section: string) => void;
@@ -427,11 +342,18 @@ interface NavMenuProps {
   isDesktop: boolean;
 }
 
-const NavMenu: React.FC<NavMenuProps> = ({ activeSection, scrollTo, language, setLanguage, isDesktop }) => {
+const NavMenu: React.FC<NavMenuProps> = ({
+  activeSection,
+  scrollTo,
+  language,
+  setLanguage,
+  isDesktop,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const menuItems = ["home", "about", "skills", "projects", "contact"];
+  // Tipamos menuItems como claves de Translations
+  const menuItems: (keyof Translations)[] = ["home", "about", "skills", "projects", "contact"];
 
   const menuContent = (
     <>
@@ -450,7 +372,10 @@ const NavMenu: React.FC<NavMenuProps> = ({ activeSection, scrollTo, language, se
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            {translations[language][section]}
+            {typeof translations[language][section] === "string"
+              ? translations[language][section] // Si es string, lo mostramos
+              : (translations[language][section] as { name: string }).name // Si es objeto, mostramos el campo 'name'
+            }
           </motion.button>
         </li>
       ))}
@@ -521,10 +446,12 @@ const DynamicNavMenu = dynamic(() => Promise.resolve(NavMenu), { ssr: false })
 export default function Component() {
   const [activeSection, setActiveSection] = useState('home')
   const [isNavVisible, setIsNavVisible] = useState(true)
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState<'en' | 'es'>('en');
   const { scrollYProgress } = useScroll()
   const lastScrollY = useRef(0)
   const [isDesktop, setIsDesktop] = useState(true)
+
+
 
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -612,7 +539,7 @@ export default function Component() {
             <DynamicNavMenu
               activeSection={activeSection}
               scrollTo={scrollTo}
-              language={language}
+              language={language as "en" | "es"}
               setLanguage={setLanguage}
               isDesktop={isDesktop}
             />
@@ -862,7 +789,7 @@ export default function Component() {
         </div>
       </Section>
 
-      <Footer language={language} />
+      <Footer language={language as "en" | "es"} />
       <PointerIllumination />
     </div>
   )
