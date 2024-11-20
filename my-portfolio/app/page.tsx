@@ -1,5 +1,5 @@
 'use client'
-import React, { ReactNode } from "react";
+import React, { ReactElement, ReactNode } from "react";
 import { useRef, useEffect, useState } from 'react'
 import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion'
 import { Github, Linkedin, Mail, Server, Database, Workflow, Cpu, FileJson, ChevronDown, ExternalLink, Globe, Menu, X } from 'lucide-react'
@@ -35,18 +35,9 @@ interface Translations {
     databaseManagement: string;
     apiDevelopment: string;
     viewProject: string;
-    projectAutomatedWorkflow: {
-      name: string;
-      description: string;
-    },
-    projectDataProcessing: {
-      name: string;
-      description: string;
-    },
-    projectRestfulAPI: {
-      name: string;
-      description: string;
-    }
+    projectAutomatedWorkflow: { name: string; description: string };
+    projectDataProcessing: { name: string; description: string };
+    projectRestfulAPI: { name: string; description: string };
 }
 
 interface TranslationsByLanguage {
@@ -136,7 +127,18 @@ const translations: TranslationsByLanguage = {
 };
 
 
-const skills = [
+type SkillKey = 
+  | 'backendDevelopment' 
+  | 'automationWorkflows' 
+  | 'databaseManagement' 
+  | 'apiDevelopment';
+
+
+const skills: {
+  nameKey: SkillKey;
+  icon: ReactElement;
+  technologies: string[];
+}[] = [
   { 
     nameKey: 'backendDevelopment', 
     icon: <Server />, 
@@ -159,9 +161,16 @@ const skills = [
   },
 ]
 
-const projects = [
+type ProjectKey = 'projectAutomatedWorkflow' | 'projectDataProcessing' | 'projectRestfulAPI';
+
+const projects: { 
+  nameKey: ProjectKey;  // nameKey is one of the keys from Translations
+  image: string;
+  technologies: string[];
+  link: string;
+}[] = [
   { 
-    nameKey: 'projectAutomatedWorkflow',
+    nameKey: 'projectAutomatedWorkflow',  // This is a valid key of Translations
     image: '/placeholder.svg?height=200&width=300',
     technologies: ['n8n', 'Python', 'MySQL'],
     link: 'https://example.com/project-a'
@@ -178,7 +187,7 @@ const projects = [
     technologies: ['JavaScript', 'Express.js', 'MongoDB'],
     link: 'https://example.com/project-c'
   },
-]
+];
 
 type SectionProps = {
   children: ReactNode;
@@ -450,9 +459,6 @@ export default function Component() {
   const { scrollYProgress } = useScroll()
   const lastScrollY = useRef(0)
   const [isDesktop, setIsDesktop] = useState(true)
-
-
-
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
